@@ -106,20 +106,30 @@
     margin-top:8px; font-weight:700;
   }
 
-  /* === Mascot === */
-  .mascot-area{ text-align:center; margin-bottom:20px; animation:bounceIn 0.8s ease-out 0.3s both; }
-  @keyframes bounceIn{
-    0%{opacity:0;transform:scale(0.3);} 50%{opacity:1;transform:scale(1.08);}
-    70%{transform:scale(0.95);} 100%{transform:scale(1);}
+  /* === Mascot (free roam) === */
+  .mascot-area{ height:8px; margin-bottom:12px; }
+  .mascot-wrap {
+    display:inline-flex; flex-direction:column; align-items:center;
+    position:fixed; z-index:600; pointer-events:auto;
+    transition: left 3s cubic-bezier(0.45,0,0.55,1), top 3s cubic-bezier(0.45,0,0.55,1);
+    left:50%; top:160px;
   }
+  .mascot-flip { display:inline-block; transition: transform 0.4s ease; line-height:1; }
   .mascot{
-    font-size:64px; cursor:pointer; display:inline-block;
+    font-size:50px; cursor:pointer; display:inline-block;
     transition:transform 0.3s ease; user-select:none;
-    filter:drop-shadow(0 4px 8px rgba(0,0,0,0.08));
+    filter:drop-shadow(0 4px 12px rgba(0,0,0,0.12));
+    line-height: 1;
   }
-  .mascot:hover{ transform:scale(1.15) rotate(-5deg); }
-  .mascot:active{ transform:scale(0.9); }
-  .mascot-bubble{ font-size:13px; color:var(--muted); margin-top:4px; min-height:20px; transition:all 0.3s ease; }
+  .mascot:hover{ transform:scale(1.2) rotate(-5deg); }
+  .mascot:active{ transform:scale(0.85); }
+  .mascot-bubble{
+    font-size:12px; color:var(--text-dark); transition:all 0.3s ease;
+    text-align:center; font-weight:700; white-space:nowrap;
+    background: white; padding: 4px 10px; border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 1.5px solid var(--line2);
+    margin-bottom: 4px;
+  }
 
   /* === Panels === */
   .panel{
@@ -439,14 +449,42 @@
     100%{opacity:0;transform:scale(0.5) translateY(-40px);}
   }
 
-  /* === Party Mode === */
-  .party-mode body, .party-mode{
-    animation: partyBg 0.5s linear infinite;
+  /* === Music Player === */
+  .music-btn{
+    position:fixed; bottom:24px; right:24px; z-index:1001;
+    width:52px; height:52px; border-radius:50%;
+    background:linear-gradient(135deg, var(--accent), var(--purple));
+    border:none; cursor:pointer; color:white; font-size:22px;
+    box-shadow:0 4px 18px rgba(255,107,157,0.35);
+    display:flex; align-items:center; justify-content:center;
+    transition:all 0.3s ease; outline:none;
   }
-  @keyframes partyBg{
-    0%{filter:hue-rotate(0deg);}
-    100%{filter:hue-rotate(360deg);}
+  .music-btn:hover{ transform:scale(1.12) rotate(10deg); box-shadow:0 6px 24px rgba(255,107,157,0.45); }
+  .music-btn.playing{ animation: musicPulse 1.8s ease-in-out infinite; }
+  @keyframes musicPulse{
+    0%,100%{ box-shadow:0 4px 18px rgba(255,107,157,0.35); }
+    50%{ box-shadow:0 4px 30px rgba(167,139,250,0.6), 0 0 0 8px rgba(255,107,157,0.12); }
   }
+  .music-tooltip{
+    position:fixed; bottom:84px; right:24px; z-index:1001;
+    background:var(--text-dark); color:white; font-size:11px; font-weight:700;
+    padding:6px 12px; border-radius:10px; pointer-events:none;
+    opacity:0; transform:translateY(4px); transition:all 0.2s ease;
+    white-space:nowrap; font-family:var(--sans);
+  }
+  .music-btn:hover + .music-tooltip, .music-tooltip:hover{ opacity:1; transform:translateY(0); }
+  .music-label{
+    position:fixed; bottom:24px; right:84px; z-index:1001;
+    background:white; border:1.5px solid var(--line2); border-radius:14px;
+    padding:8px 14px; font-size:12px; font-weight:700; color:var(--muted);
+    box-shadow:0 4px 14px rgba(0,0,0,0.08);
+    display:flex; align-items:center; gap:8px;
+    transition:all 0.3s ease; opacity:0; pointer-events:none;
+    transform:translateX(10px);
+  }
+  .music-label.visible{ opacity:1; pointer-events:auto; transform:translateX(0); }
+  .music-label .note-anim{ display:inline-block; animation:noteBounce 0.6s ease-in-out infinite alternate; }
+  @keyframes noteBounce{ 0%{transform:translateY(0);} 100%{transform:translateY(-4px);} }
 
   /* === Footer === */
   footer{
@@ -492,6 +530,19 @@
 <canvas id="confetti-canvas"></canvas>
 <div class="toast-container" id="toastContainer"></div>
 
+<!-- Music Player -->
+<button class="music-btn" id="musicBtn" title="Lofi Music">🎵</button>
+<div class="music-tooltip">Lofi Music ☁️</div>
+<div class="music-label" id="musicLabel"><span class="note-anim">🎶</span> <span id="musicLabelText">Lofi Chill...</span></div>
+
+<!-- Cat mascot (free roam, fixed) -->
+<div class="mascot-wrap" id="mascotWrap">
+  <div class="mascot-bubble" id="mascotBubble">Jalan-jalan duls... 🐾</div>
+  <div class="mascot-flip" id="mascotFlip">
+    <div class="mascot" id="mascot" title="">🐈</div>
+  </div>
+</div>
+
 <div class="wrap">
   <header>
     <p class="eyebrow">
@@ -503,10 +554,8 @@
     <p class="today-date" id="todayDate"></p>
   </header>
 
-  <div class="mascot-area">
-    <div class="mascot" id="mascot" title="">🐱</div>
-    <div class="mascot-bubble" id="mascotBubble">Semangat kerja hari ini! ✊</div>
-  </div>
+  <div class="mascot-area"></div>
+
 
   <!-- Target Panel -->
   <div class="panel">
@@ -618,6 +667,7 @@ const progressWrap = document.getElementById('progressWrap');
 const progressFill = document.getElementById('progressFill');
 const progressLabel = document.getElementById('progressLabel');
 const resultEmoji = document.getElementById('resultEmoji');
+const mascotWrap = document.getElementById('mascotWrap');
 const mascotEl = document.getElementById('mascot');
 const mascotBubble = document.getElementById('mascotBubble');
 const saveBtn = document.getElementById('saveBtn');
@@ -642,8 +692,8 @@ const toastContainer = document.getElementById('toastContainer');
 // ===========================
 let target = 540;
 let lastMetTarget = false;
-let mascotClickCount = 0;
-let partyMode = false;
+let isCatComplaining = false;
+let catWalkInterval;
 let historyWeekOffset = 0; // 0 = this week, -1 = last week, etc.
 
 // ===========================
@@ -763,66 +813,100 @@ todayDateEl.textContent = '📅 ' + formatDateID(getTodayStr());
 // ===========================
 // MASCOT INTERACTIONS
 // ===========================
-const mascotFaces = ['🐱','😺','😸','😻','🙀','😹','😽','🐾'];
-const mascotMessages = [
-  'Semangat kerja hari ini! ✊',
-  'Kamu pasti bisa! 💪',
+const catMessages = [
+  'Jalan-jalan duls... 🐾',
+  'Mencari ikan tuna... 🐟',
+  'Kerja kerja kerja... 💼',
+  'Meow meow meow... 🎵',
+  'Lagi ngecek logbook kamu... 📋',
+  'Nyari tempat tidur siang... 🛋️',
+  'Semangat semangat! ✊',
   'Jangan lupa istirahat ya~ 🍵',
-  'Wow rajin banget! ⭐',
-  'Sedikit lagi target tercapai! 🎯',
-  'Kerja santai tapi pasti~ 🌸',
-  'Udah makan belum? 🍙',
-  'Keep going! 🚀',
-  'Kamu hebat! 🌟',
-  'Ganbatte! がんばって！ 💕',
-  'Jangan lupa stretching~ 🧘',
-  'Minum air putih ya! 💧',
-  'Istirahat 5 menit yuk~ 🛋️',
-  'Produktif banget hari ini! 🎉',
-  'Sip sip, lanjutkan! 👍',
-  'Auto rajin nih~ 📚'
+  'Ada tikus gak ya di sini... 🐁'
 ];
 
-mascotEl.addEventListener('click', () => {
-  mascotClickCount++;
-  const randomFace = mascotFaces[Math.floor(Math.random() * mascotFaces.length)];
-  const randomMsg = mascotMessages[Math.floor(Math.random() * mascotMessages.length)];
-  mascotEl.textContent = randomFace;
-  mascotBubble.textContent = randomMsg;
-  mascotEl.style.transform = 'scale(1.3) rotate(10deg)';
-  setTimeout(() => mascotEl.style.transform = '', 300);
+const complainMessages = [
+  'Eh, jangan pencet-pencet! 😾',
+  'Lagi jalan tau, diganggu! 💢',
+  'Aduh, ngagetin aja! 🙀',
+  'Hush hush, kerja sana! 🐾',
+  'Ngapain klik-klik? 😠'
+];
 
-  // Sparkle hearts
-  for(let i = 0; i < 5; i++){
+function changeCatMessage() {
+  if (isCatComplaining) return;
+  const randomMsg = catMessages[Math.floor(Math.random() * catMessages.length)];
+  mascotBubble.textContent = randomMsg;
+}
+
+catWalkInterval = setInterval(changeCatMessage, 4000);
+
+mascotEl.addEventListener('click', () => {
+  if (isCatComplaining) return;
+  
+  isCatComplaining = true;
+  mascotEl.textContent = ['😾', '🙀', '😿'][Math.floor(Math.random() * 3)];
+  mascotBubble.textContent = complainMessages[Math.floor(Math.random() * complainMessages.length)];
+  mascotBubble.style.color = 'var(--bad)';
+  
+  // Sparkle stars
+  for(let i = 0; i < 3; i++){
     setTimeout(() => createSparkle(
       mascotEl.getBoundingClientRect().left + mascotEl.offsetWidth/2 + (Math.random()-0.5)*50,
       mascotEl.getBoundingClientRect().top + (Math.random()-0.5)*30,
-      ['💖','✨','💕','⭐','🌟','🎀','🌸'][Math.floor(Math.random()*7)]
-    ), i * 70);
+      '💢'
+    ), i * 100);
   }
 
-  // Easter egg: 10 clicks → party mode!
-  if(mascotClickCount === 10 && !partyMode){
-    activatePartyMode();
-  }
+  // Resume after 3 seconds
+  setTimeout(() => {
+    isCatComplaining = false;
+    mascotEl.textContent = '🐈';
+    mascotBubble.style.color = '';
+    changeCatMessage();
+    moveCatRandomly(); // wander to a new spot after complaining
+  }, 3000);
 });
 
-function activatePartyMode(){
-  partyMode = true;
-  document.documentElement.classList.add('party-mode');
-  mascotEl.textContent = '🥳';
-  mascotBubble.textContent = '🎉 PARTY MODE ACTIVATED! 🎉';
-  showToast('🥳', 'Party Mode!', 'Kamu menemukan easter egg! 🎉');
-  launchConfetti();
+// ===========================
+// CAT FREE ROAM
+// ===========================
+let catCurX = window.innerWidth * 0.5;
+let catCurY = 160;
+const mascotFlipEl = document.getElementById('mascotFlip');
 
-  setTimeout(() => {
-    document.documentElement.classList.remove('party-mode');
-    partyMode = false;
-    mascotClickCount = 0;
-    mascotEl.textContent = '🐱';
-    mascotBubble.textContent = 'Hehe, seru kan? 😸';
-  }, 5000);
+function moveCatRandomly(){
+  if(isCatComplaining) return;
+  const margin = 70;
+  const catW = 60;
+  const catH = 80;
+  const newX = margin + Math.random() * (window.innerWidth - catW - margin * 2);
+  // Roam the full page height — pick from viewport height so it's visible
+  const vh = window.innerHeight;
+  const newY = 100 + Math.random() * (vh - catH - 120);
+
+  // Flip direction
+  if(mascotFlipEl){
+    mascotFlipEl.style.transform = newX > catCurX ? 'scaleX(-1)' : 'scaleX(1)';
+  }
+
+  catCurX = newX;
+  catCurY = newY;
+  mascotWrap.style.left = newX + 'px';
+  mascotWrap.style.top = newY + 'px';
 }
+
+// Initial position
+mascotWrap.style.left = catCurX + 'px';
+mascotWrap.style.top = catCurY + 'px';
+
+// Start roaming
+setInterval(() => {
+  if(!isCatComplaining) moveCatRandomly();
+}, 5000);
+
+// First move after slight delay
+setTimeout(moveCatRandomly, 800);
 
 // Sparkle on click
 document.addEventListener('click', (e) => {
@@ -1095,20 +1179,7 @@ function calculate(){
   else if(total < 500) resultEmoji.textContent = '🌻';
   else resultEmoji.textContent = '🌈';
 
-  // Mascot context reactions
-  if(!partyMode){
-    if(total === 0){
-      mascotEl.textContent = '🐱';
-    } else if(total < 200){
-      mascotEl.textContent = '😺';
-    } else if(total < 400){
-      mascotEl.textContent = '😸';
-    } else if(total >= target && target > 0){
-      mascotEl.textContent = '😻';
-    } else {
-      mascotEl.textContent = '😸';
-    }
-  }
+  // Removed static mascot context reactions for walking cat
 
   // Progress
   if(target > 0){
@@ -1123,7 +1194,7 @@ function calculate(){
       if(!lastMetTarget){
         lastMetTarget = true;
         launchConfetti();
-        if(!partyMode){
+        if(!isCatComplaining){
           mascotEl.textContent = '😻';
           mascotBubble.textContent = 'YAAAY! Target tercapai! 🎉🎊';
         }
@@ -1213,12 +1284,11 @@ saveBtn.addEventListener('click', () => {
   }
 
   // Mascot reaction
-  if(!partyMode){
+  if(!isCatComplaining){
     mascotEl.textContent = '😻';
     mascotBubble.textContent = 'Data tersimpan~ Rajin banget! 💕';
     setTimeout(() => {
-      mascotEl.textContent = '😸';
-      mascotBubble.textContent = 'Semangat terus ya! ✊';
+      if(!isCatComplaining) changeCatMessage();
     }, 3000);
   }
 
@@ -1413,6 +1483,246 @@ loadTodayData();
 renderHistory();
 updateWeeklySummary();
 updateStreakBadge();
+
+// ===========================
+// LOFI MUSIC ENGINE (Web Audio API)
+// ===========================
+const musicBtn = document.getElementById('musicBtn');
+const musicLabel = document.getElementById('musicLabel');
+const musicLabelText = document.getElementById('musicLabelText');
+
+let audioCtx = null;
+let isPlaying = false;
+let lofiNodes = {};
+let noteTimeout = null;
+
+// Pentatonic scale frequencies (C minor pentatonic, soft octave)
+const pentatonic = [
+  130.81, 155.56, 174.61, 196.00, 233.08, // C3 Eb3 F3 G3 Bb3
+  261.63, 311.13, 349.23, 392.00, 466.16, // C4 Eb4 F4 G4 Bb4
+  523.25, 622.25, 698.46, 784.00, 932.33  // C5 Eb5 F5 G5 Bb5
+];
+
+const chordRoots = [130.81, 155.56, 174.61, 196.00]; // chord roots
+
+function initAudio(){
+  if(audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+}
+
+// Master gain (overall volume)
+function getMaster(){
+  if(lofiNodes.master) return lofiNodes.master;
+  const master = audioCtx.createGain();
+  master.gain.setValueAtTime(0.0, audioCtx.currentTime);
+  master.gain.linearRampToValueAtTime(0.55, audioCtx.currentTime + 2);
+  master.connect(audioCtx.destination);
+  lofiNodes.master = master;
+  return master;
+}
+
+// Vinyl crackle noise
+function startVinyl(){
+  const bufSize = audioCtx.sampleRate * 2;
+  const buf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+  const data = buf.getChannelData(0);
+  for(let i = 0; i < bufSize; i++){
+    data[i] = (Math.random() * 2 - 1) * (Math.random() < 0.997 ? 0.004 : 0.06);
+  }
+  function playVinyl(){
+    if(!isPlaying) return;
+    const src = audioCtx.createBufferSource();
+    src.buffer = buf;
+    const gain = audioCtx.createGain();
+    gain.gain.value = 0.18;
+    // Low-pass filter for warmth
+    const lp = audioCtx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.value = 4000;
+    src.connect(lp);
+    lp.connect(gain);
+    gain.connect(getMaster());
+    src.start();
+    src.onended = playVinyl;
+    lofiNodes.vinylSrc = src;
+  }
+  playVinyl();
+}
+
+// Soft pad drone chord
+function startPad(){
+  function makePadOsc(freq, detune, gainVal){
+    const osc = audioCtx.createOscillator();
+    osc.type = 'sawtooth';
+    osc.frequency.value = freq;
+    osc.detune.value = detune;
+    const g = audioCtx.createGain();
+    g.gain.value = gainVal;
+    // Warm LP filter
+    const lp = audioCtx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.value = 600;
+    lp.Q.value = 0.5;
+    osc.connect(lp);
+    lp.connect(g);
+    g.connect(getMaster());
+    osc.start();
+    return {osc, g};
+  }
+  // Cm chord: C Eb G
+  const pad = [
+    makePadOsc(65.41, 0, 0.06),
+    makePadOsc(77.78, 5, 0.05),
+    makePadOsc(98.00, -4, 0.05),
+    makePadOsc(130.81, 8, 0.04),
+  ];
+  lofiNodes.pads = pad;
+}
+
+// Sub bass
+function startBass(){
+  const bassRhythm = [0, 0, 1.5, 0, 2.5, 0, 3.5, 0];
+  let idx = 0;
+  function playBass(){
+    if(!isPlaying) return;
+    const now = audioCtx.currentTime;
+    const freq = chordRoots[Math.floor(Math.random() * chordRoots.length)] * 0.5;
+    const osc = audioCtx.createOscillator();
+    osc.type = 'triangle';
+    osc.frequency.value = freq;
+    const g = audioCtx.createGain();
+    g.gain.setValueAtTime(0, now);
+    g.gain.linearRampToValueAtTime(0.18, now + 0.05);
+    g.gain.linearRampToValueAtTime(0.1, now + 0.4);
+    g.gain.linearRampToValueAtTime(0, now + 0.9);
+    const lp = audioCtx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.value = 180;
+    osc.connect(lp);
+    lp.connect(g);
+    g.connect(getMaster());
+    osc.start(now);
+    osc.stop(now + 1);
+    const interval = 1.8 + Math.random() * 1.4;
+    setTimeout(playBass, interval * 1000);
+  }
+  setTimeout(playBass, 2000);
+}
+
+// Piano note with realistic envelope
+function playPianoNote(freq, when, duration, vel){
+  const now = audioCtx.currentTime + when;
+  const osc1 = audioCtx.createOscillator();
+  const osc2 = audioCtx.createOscillator();
+  osc1.type = 'triangle';
+  osc2.type = 'sine';
+  osc1.frequency.value = freq;
+  osc2.frequency.value = freq * 2.002; // slight detuning
+
+  const env = audioCtx.createGain();
+  env.gain.setValueAtTime(0, now);
+  env.gain.linearRampToValueAtTime(vel * 0.28, now + 0.012);
+  env.gain.exponentialRampToValueAtTime(vel * 0.15, now + 0.1);
+  env.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+  // Reverb-like delay
+  const delay = audioCtx.createDelay(1.0);
+  delay.delayTime.value = 0.22;
+  const delayGain = audioCtx.createGain();
+  delayGain.gain.value = 0.25;
+
+  const lp = audioCtx.createBiquadFilter();
+  lp.type = 'lowpass';
+  lp.frequency.value = 3200;
+
+  osc1.connect(env);
+  osc2.connect(env);
+  env.connect(lp);
+  lp.connect(getMaster());
+  lp.connect(delay);
+  delay.connect(delayGain);
+  delayGain.connect(getMaster());
+
+  osc1.start(now);
+  osc2.start(now);
+  osc1.stop(now + duration + 0.5);
+  osc2.stop(now + duration + 0.5);
+}
+
+// Schedule random lofi piano phrases
+function schedulePianoPhrase(){
+  if(!isPlaying) return;
+  const numNotes = 2 + Math.floor(Math.random() * 4);
+  let offset = 0;
+  for(let i = 0; i < numNotes; i++){
+    const freq = pentatonic[Math.floor(Math.random() * pentatonic.length)];
+    const dur = 0.6 + Math.random() * 1.2;
+    const vel = 0.4 + Math.random() * 0.5;
+    const gap = 0.18 + Math.random() * 0.55;
+    playPianoNote(freq, offset, dur, vel);
+    offset += gap;
+  }
+  const nextPhrase = (2.5 + Math.random() * 4.5) * 1000;
+  noteTimeout = setTimeout(schedulePianoPhrase, nextPhrase);
+}
+
+const lofiTracks = ['Lofi Chill...', 'Rainy Afternoon~', 'Study Vibes ☕', 'Midnight Focus...', 'Cozy Room 🌙'];
+let trackIdx = 0;
+
+function startLofi(){
+  initAudio();
+  if(audioCtx.state === 'suspended') audioCtx.resume();
+  isPlaying = true;
+  getMaster().gain.setValueAtTime(0, audioCtx.currentTime);
+  getMaster().gain.linearRampToValueAtTime(0.55, audioCtx.currentTime + 2);
+  startVinyl();
+  startPad();
+  startBass();
+  schedulePianoPhrase();
+
+  musicBtn.classList.add('playing');
+  musicBtn.textContent = '🎵';
+  musicLabel.classList.add('visible');
+  musicLabelText.textContent = lofiTracks[trackIdx % lofiTracks.length];
+}
+
+function stopLofi(){
+  isPlaying = false;
+  if(noteTimeout) clearTimeout(noteTimeout);
+  if(lofiNodes.master){
+    const m = lofiNodes.master;
+    m.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1);
+    setTimeout(() => {
+      try{ lofiNodes.vinylSrc && lofiNodes.vinylSrc.stop(); } catch(e){}
+      if(lofiNodes.pads) lofiNodes.pads.forEach(p => { try{ p.osc.stop(); } catch(e){} });
+      lofiNodes = {};
+    }, 1100);
+  }
+  musicBtn.classList.remove('playing');
+  musicBtn.textContent = '🎵';
+  musicLabel.classList.remove('visible');
+}
+
+musicBtn.addEventListener('click', () => {
+  if(isPlaying){
+    stopLofi();
+    showToast('🔇', 'Musik dimatikan~', 'Klik lagi untuk main musik lofi 🎵');
+  } else {
+    trackIdx++;
+    startLofi();
+    showToast('🎵', 'Lofi music on!', 'Semangat belajar~ ☕✨');
+    // Sparkle
+    const rect = musicBtn.getBoundingClientRect();
+    for(let i = 0; i < 5; i++){
+      setTimeout(() => createSparkle(
+        rect.left + rect.width/2 + (Math.random()-0.5)*40,
+        rect.top + (Math.random()-0.5)*20,
+        ['🎵','🎶','✨','🎼','🌙'][Math.floor(Math.random()*5)]
+      ), i * 80);
+    }
+  }
+});
+
 </script>
 </body>
 </html>

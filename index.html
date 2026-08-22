@@ -105,6 +105,30 @@
     font-family:var(--mono); font-size:12px; color:var(--purple);
     margin-top:8px; font-weight:700;
   }
+  .today-date-input {
+    font-family:var(--mono); font-size:13px; color:var(--purple);
+    background: var(--bg); border: 1.5px solid var(--line2); 
+    border-radius: 8px; padding: 6px 12px; outline: none;
+    cursor: pointer; transition: all 0.2s ease;
+    text-align: center;
+  }
+  .today-date-input:focus, .today-date-input:hover {
+    border-color: var(--purple); box-shadow: 0 0 0 3px rgba(167,139,250,0.15);
+  }
+  .name-input {
+    font-family:var(--sans); font-size:13px; color:var(--text-dark);
+    background: var(--bg); border: 1.5px dashed var(--purple); 
+    border-radius: 8px; padding: 6px 12px; outline: none;
+    transition: all 0.2s ease; text-align: center; max-width: 130px;
+    font-weight: 700;
+  }
+  .name-input:focus, .name-input:hover {
+    border-color: var(--accent); background: white;
+    box-shadow: 0 0 0 3px rgba(255,107,157,0.15);
+  }
+  .header-actions {
+    display: flex; gap: 10px; justify-content: center; align-items: center; margin-top: 14px;
+  }
 
   /* === Mascot (free roam) === */
   .mascot-area{ height:8px; margin-bottom:12px; }
@@ -552,7 +576,10 @@
     </p>
     <h1>Kalkulator Jam Magang <span class="wave">✨</span></h1>
     <p class="sub">Masukkan jam mulai & selesai tiap sesi kerja. Save & tracking mingguan! 💕</p>
-    <p class="today-date" id="todayDate"></p>
+    <div class="header-actions">
+      <input type="text" id="userNameInput" placeholder="Namamu..." class="name-input" title="Kucing akan memanggilmu dengan nama ini!">
+      <input type="date" class="today-date-input" id="todayDate">
+    </div>
   </header>
 
   <div class="mascot-area"></div>
@@ -561,13 +588,13 @@
   <!-- Target Panel -->
   <div class="panel">
     <h2><span class="icon">🎯</span> Target Hari Ini</h2>
-    <div class="day-target">
-      <button type="button" data-target="540" class="active cute-tooltip" data-tip="9 jam kerja!">📅 Senin–Jumat · 540m</button>
-      <button type="button" data-target="540" class="cute-tooltip" data-tip="9 jam juga~">📅 Sabtu · 540m</button>
+    <div class="day-target" id="presetContainer">
+      <button type="button" data-target="540" class="active cute-tooltip" data-tip="9 jam kerja!">📅 Senin–Sabtu · 540m</button>
       <button type="button" data-target="0" id="customBtn" class="cute-tooltip" data-tip="Atur sendiri!">⚙️ Custom</button>
     </div>
-    <div id="customWrap" style="display:none;margin-bottom:2px;">
-      <input type="number" id="customTarget" placeholder="✏️ Target menit custom...">
+    <div id="customWrap" style="display:none;margin-bottom:2px;position:relative;">
+      <input type="number" id="customTarget" placeholder="✏️ Target menit custom..." style="padding-right: 40px;">
+      <button type="button" id="savePresetBtn" class="cute-tooltip" data-tip="Simpan sbg preset" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;outline:none;">💾</button>
     </div>
   </div>
 
@@ -598,7 +625,7 @@
     </div>
     <div id="statusBox"></div>
     <div class="save-row">
-      <button class="btn-save" id="saveBtn" type="button">💾 Simpan Hari Ini</button>
+      <button class="btn-save" id="saveBtn" type="button">💾 Simpan</button>
     </div>
   </div>
 
@@ -660,10 +687,11 @@ const extraInput = document.getElementById('extraMin');
 const totalMinEl = document.getElementById('totalMin');
 const totalHMEl = document.getElementById('totalHM');
 const statusBox = document.getElementById('statusBox');
-const dayButtons = document.querySelectorAll('.day-target button:not(#customBtn)');
+const presetContainer = document.getElementById('presetContainer');
 const customBtn = document.getElementById('customBtn');
 const customWrap = document.getElementById('customWrap');
 const customTarget = document.getElementById('customTarget');
+const savePresetBtn = document.getElementById('savePresetBtn');
 const progressWrap = document.getElementById('progressWrap');
 const progressFill = document.getElementById('progressFill');
 const progressLabel = document.getElementById('progressLabel');
@@ -673,6 +701,7 @@ const mascotEl = document.getElementById('mascot');
 const mascotBubble = document.getElementById('mascotBubble');
 const saveBtn = document.getElementById('saveBtn');
 const todayDateEl = document.getElementById('todayDate');
+const userNameInput = document.getElementById('userNameInput');
 const streakBadge = document.getElementById('streakBadge');
 const streakCountEl = document.getElementById('streakCount');
 const weeklyTotalEl = document.getElementById('weeklyTotal');
@@ -807,9 +836,24 @@ function saveAchievements(a){
 }
 
 // ===========================
-// DISPLAY TODAY'S DATE
+// DISPLAY & HANDLE DATE PICKER & NAME
 // ===========================
-todayDateEl.textContent = '📅 ' + formatDateID(getTodayStr());
+userNameInput.value = localStorage.getItem('magang_username') || '';
+userNameInput.addEventListener('input', () => {
+  localStorage.setItem('magang_username', userNameInput.value);
+});
+function getUserName() {
+  const n = localStorage.getItem('magang_username');
+  return n && n.trim() ? n.trim() : 'kamu';
+}
+
+todayDateEl.value = getTodayStr();
+todayDateEl.addEventListener('change', () => {
+  if (!todayDateEl.value) {
+    todayDateEl.value = getTodayStr();
+  }
+  loadDataForDate(todayDateEl.value);
+});
 
 // ===========================
 // MASCOT INTERACTIONS
@@ -817,37 +861,45 @@ todayDateEl.textContent = '📅 ' + formatDateID(getTodayStr());
 const catMessages = [
   'Jalan-jalan duls... 🐾',
   'Mencari ikan tuna... 🐟',
-  'Kerja kerja kerja... 💼',
+  'Semangat kerjanya, {name}! 💼',
   'Meow meow meow... 🎵',
-  'Lagi ngecek logbook kamu... 📋',
+  'Lagi ngecek logbooknya {name}... 📋',
   'Nyari tempat tidur siang... 🛋️',
-  'Semangat semangat! ✊',
-  'Jangan lupa istirahat ya~ 🍵',
-  'Ada tikus gak ya di sini... 🐁'
+  'Semangat semangat, {name}! ✊',
+  'Jangan lupa istirahat ya {name}~ 🍵',
+  'Ada tikus gak ya di sini... 🐁',
+  '{name} rajin banget sih! 💕'
 ];
 
 const complainMessages = [
-  'Eh, jangan pencet-pencet! 😾',
+  'Eh {name}, jangan pencet-pencet! 😾',
   'Lagi jalan tau, diganggu! 💢',
   'Aduh, ngagetin aja! 🙀',
-  'Hush hush, kerja sana! 🐾',
-  'Ngapain klik-klik? 😠'
+  'Hush hush {name}, kerja sana! 🐾',
+  'Ngapain klik-klik {name}? 😠'
 ];
 
 function changeCatMessage() {
   if (isCatComplaining) return;
-  const randomMsg = catMessages[Math.floor(Math.random() * catMessages.length)];
-  mascotBubble.textContent = randomMsg;
+  const rawMsg = catMessages[Math.floor(Math.random() * catMessages.length)];
+  mascotBubble.textContent = rawMsg.replace(/\{name\}/g, getUserName());
 }
 
 catWalkInterval = setInterval(changeCatMessage, 4000);
 
-mascotEl.addEventListener('click', () => {
+function triggerComplain(reason) {
   if (isCatComplaining) return;
-  
   isCatComplaining = true;
   mascotEl.textContent = ['😾', '🙀', '😿'][Math.floor(Math.random() * 3)];
-  mascotBubble.textContent = complainMessages[Math.floor(Math.random() * complainMessages.length)];
+  
+  if (reason === 'drag') {
+    const raw = ['Turunin woy {name}! 😾', 'Jangan diseret! 💢', 'Lepasin {name}! 🙀'][Math.floor(Math.random() * 3)];
+    mascotBubble.textContent = raw.replace(/\{name\}/g, getUserName());
+  } else {
+    const raw = complainMessages[Math.floor(Math.random() * complainMessages.length)];
+    mascotBubble.textContent = raw.replace(/\{name\}/g, getUserName());
+  }
+  
   mascotBubble.style.color = 'var(--bad)';
   
   // Sparkle stars
@@ -865,19 +917,31 @@ mascotEl.addEventListener('click', () => {
     mascotEl.textContent = '🐈';
     mascotBubble.style.color = '';
     changeCatMessage();
-    moveCatRandomly(); // wander to a new spot after complaining
+    if (!isDraggingCat) moveCatRandomly(); // wander to a new spot after complaining
   }, 3000);
+}
+
+mascotEl.addEventListener('click', (e) => {
+  if (catHasDragged) {
+    catHasDragged = false;
+    return;
+  }
+  triggerComplain('click');
 });
 
 // ===========================
-// CAT FREE ROAM
+// CAT FREE ROAM & DRAG
 // ===========================
 let catCurX = window.innerWidth * 0.5;
 let catCurY = 160;
+let isDraggingCat = false;
+let catHasDragged = false;
+let dragStartX = 0, dragStartY = 0;
+let catStartX = 0, catStartY = 0;
 const mascotFlipEl = document.getElementById('mascotFlip');
 
 function moveCatRandomly(){
-  if(isCatComplaining) return;
+  if(isCatComplaining || isDraggingCat) return;
   const margin = 70;
   const catW = 60;
   const catH = 80;
@@ -903,11 +967,74 @@ mascotWrap.style.top = catCurY + 'px';
 
 // Start roaming
 setInterval(() => {
-  if(!isCatComplaining) moveCatRandomly();
+  if(!isCatComplaining && !isDraggingCat) moveCatRandomly();
 }, 5000);
 
 // First move after slight delay
 setTimeout(moveCatRandomly, 800);
+
+// Drag functionality
+function startCatDrag(e) {
+  isDraggingCat = true;
+  catHasDragged = false;
+  mascotWrap.style.transition = 'none';
+  
+  const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+  const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+  
+  dragStartX = clientX;
+  dragStartY = clientY;
+  catStartX = catCurX;
+  catStartY = catCurY;
+  
+  document.addEventListener('mousemove', dragCat);
+  document.addEventListener('touchmove', dragCat, {passive: false});
+  document.addEventListener('mouseup', endCatDrag);
+  document.addEventListener('touchend', endCatDrag);
+}
+
+function dragCat(e) {
+  if (!isDraggingCat) return;
+  e.preventDefault(); // prevent scrolling
+  
+  const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+  const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+  
+  const dx = clientX - dragStartX;
+  const dy = clientY - dragStartY;
+  
+  if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+    catHasDragged = true;
+    triggerComplain('drag');
+  }
+  
+  catCurX = catStartX + dx;
+  catCurY = catStartY + dy;
+  
+  if (mascotFlipEl && Math.abs(dx) > 2) {
+    mascotFlipEl.style.transform = dx > 0 ? 'scaleX(-1)' : 'scaleX(1)';
+  }
+  
+  mascotWrap.style.left = catCurX + 'px';
+  mascotWrap.style.top = catCurY + 'px';
+}
+
+function endCatDrag(e) {
+  if (!isDraggingCat) return;
+  isDraggingCat = false;
+  
+  mascotWrap.style.transition = 'left 3s cubic-bezier(0.45,0,0.55,1), top 3s cubic-bezier(0.45,0,0.55,1)';
+  
+  document.removeEventListener('mousemove', dragCat);
+  document.removeEventListener('touchmove', dragCat);
+  document.removeEventListener('mouseup', endCatDrag);
+  document.removeEventListener('touchend', endCatDrag);
+  
+  setTimeout(() => { catHasDragged = false; }, 50);
+}
+
+mascotEl.addEventListener('mousedown', startCatDrag);
+mascotEl.addEventListener('touchstart', startCatDrag, {passive: false});
 
 // Sparkle on click
 document.addEventListener('click', (e) => {
@@ -977,30 +1104,122 @@ function updateSessionBadge(row, badge){
 
 addBtn.addEventListener('click', () => makeSession());
 
-// Target buttons
-dayButtons.forEach(btn => {
-  btn.addEventListener('click', () => {
+// ===========================
+// TARGET PRESETS & BUTTONS
+// ===========================
+const PRESETS_KEY = 'magang_custom_presets';
+
+function loadPresets() {
+  const raw = localStorage.getItem(PRESETS_KEY);
+  return raw ? JSON.parse(raw) : [];
+}
+
+function savePresets(arr) {
+  localStorage.setItem(PRESETS_KEY, JSON.stringify(arr));
+}
+
+function renderPresets() {
+  // Remove existing dynamically added presets
+  document.querySelectorAll('.custom-preset-btn').forEach(b => b.remove());
+  
+  const presets = loadPresets();
+  
+  presets.forEach(p => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'custom-preset-btn cute-tooltip';
+    btn.dataset.target = p;
+    btn.dataset.tip = 'Tahan/klik kanan hapus';
+    btn.innerHTML = `📌 Custom · ${p}m`;
+    
+    // Context menu to delete (works for long press on mobile too)
+    btn.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      if(confirm(`Hapus preset ${p}m?`)){
+        const newPresets = loadPresets().filter(val => val !== p);
+        savePresets(newPresets);
+        renderPresets();
+        if(target === p) {
+           presetContainer.querySelector('button[data-target="540"]').click();
+        }
+      }
+    });
+
+    presetContainer.insertBefore(btn, customBtn);
+  });
+  
+  updateActiveTargetButton();
+}
+
+function updateActiveTargetButton() {
+  const allBtns = document.querySelectorAll('.day-target button');
+  allBtns.forEach(b => b.classList.remove('active'));
+  
+  const matchBtn = [...document.querySelectorAll('.day-target button:not(#customBtn)')]
+    .find(b => parseInt(b.dataset.target) === target);
+  
+  if(matchBtn){
+    matchBtn.classList.add('active');
+    customWrap.style.display = 'none';
+  } else if (target > 0) {
+    customBtn.classList.add('active');
+    customWrap.style.display = 'block';
+    customTarget.value = target;
+  } else {
+    // Default fallback
+    presetContainer.querySelector('button[data-target="540"]').classList.add('active');
+    customWrap.style.display = 'none';
+  }
+}
+
+// Event Delegation for all preset buttons
+presetContainer.addEventListener('click', (e) => {
+  const btn = e.target.closest('button');
+  if(!btn) return;
+  
+  if(btn.id === 'customBtn'){
+    document.querySelectorAll('.day-target button').forEach(b => b.classList.remove('active'));
+    customBtn.classList.add('active');
+    customWrap.style.display = 'block';
+    customTarget.focus();
+    target = parseInt(customTarget.value, 10) || 0;
+    calculate();
+  } else {
     document.querySelectorAll('.day-target button').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     customWrap.style.display = 'none';
     target = parseInt(btn.dataset.target, 10);
     calculate();
-  });
+  }
 });
 
-customBtn.addEventListener('click', () => {
-  document.querySelectorAll('.day-target button').forEach(b => b.classList.remove('active'));
-  customBtn.classList.add('active');
-  customWrap.style.display = 'block';
-  customTarget.focus();
-  target = parseInt(customTarget.value, 10) || 0;
-  calculate();
+savePresetBtn.addEventListener('click', () => {
+  const val = parseInt(customTarget.value, 10);
+  if(val > 0){
+    const presets = loadPresets();
+    if(!presets.includes(val)){
+      presets.push(val);
+      savePresets(presets);
+      showToast('💾', 'Preset Disimpan', `Target ${val}m berhasil ditambahkan!`);
+      renderPresets();
+      
+      // Auto-select the newly added preset
+      target = val;
+      updateActiveTargetButton();
+      calculate();
+    } else {
+      showToast('⚠️', 'Sudah Ada', `Preset ${val}m sudah ada di daftar.`);
+    }
+  }
 });
 
 customTarget.addEventListener('input', () => {
   target = parseInt(customTarget.value, 10) || 0;
   calculate();
 });
+
+// Initialize presets
+renderPresets();
 
 extraInput.addEventListener('input', calculate);
 
@@ -1264,7 +1483,7 @@ saveBtn.addEventListener('click', () => {
     savedAt: new Date().toISOString()
   };
 
-  saveDay(getTodayStr(), data);
+  saveDay(todayDateEl.value, data);
 
   // Visual feedback
   saveBtn.classList.add('saved');
@@ -1301,11 +1520,10 @@ saveBtn.addEventListener('click', () => {
 });
 
 // ===========================
-// LOAD TODAY'S DATA ON STARTUP
+// LOAD DATA FOR SPECIFIC DATE
 // ===========================
-function loadTodayData(){
-  const today = getTodayStr();
-  const data = loadDay(today);
+function loadDataForDate(dateStr){
+  const data = loadDay(dateStr);
 
   if(data){
     // Load from saved data
@@ -1316,31 +1534,30 @@ function loadTodayData(){
     target = data.target || 540;
 
     // Set active target button
-    const allBtns = document.querySelectorAll('.day-target button');
-    allBtns.forEach(b => b.classList.remove('active'));
-    const matchBtn = [...allBtns].find(b => parseInt(b.dataset.target) === target && b.id !== 'customBtn');
-    if(matchBtn){
-      matchBtn.classList.add('active');
-    } else if(target > 0){
-      customBtn.classList.add('active');
-      customWrap.style.display = 'block';
-      customTarget.value = target;
-    } else {
-      allBtns[0].classList.add('active');
-    }
+    updateActiveTargetButton();
 
-    mascotBubble.textContent = 'Selamat datang kembali! Data hari ini sudah di-load 📂';
+    mascotBubble.textContent = `Data ${formatDateShort(dateStr)} di-load 📂`;
   } else {
-    // Check draft
-    const draft = loadDraft();
-    if(draft && draft.sessions.length > 0){
-      sessionsEl.innerHTML = '';
-      draft.sessions.forEach(s => makeSession(s.start, s.end));
-      extraInput.value = draft.extra || 0;
-      target = draft.target || 540;
+    sessionsEl.innerHTML = '';
+    if (dateStr === getTodayStr()) {
+      // Check draft
+      const draft = loadDraft();
+      if(draft && draft.sessions.length > 0){
+        draft.sessions.forEach(s => makeSession(s.start, s.end));
+        extraInput.value = draft.extra || 0;
+        target = draft.target || 540;
+      } else {
+        makeSession();
+        makeSession();
+        extraInput.value = 0;
+      }
     } else {
       makeSession();
       makeSession();
+      extraInput.value = 0;
+      target = 540;
+      updateActiveTargetButton();
+      mascotBubble.textContent = `Sesi baru untuk ${formatDateShort(dateStr)} ✨`;
     }
   }
   calculate();
@@ -1423,14 +1640,9 @@ function renderHistory(){
     // Click to load
     item.querySelector('.hi-info').addEventListener('click', () => {
       if(confirm(`Load data ${formatDateID(dateStr)}?`)){
-        sessionsEl.innerHTML = '';
-        (data.sessions || []).forEach(s => makeSession(s.start, s.end));
-        if(!data.sessions || data.sessions.length === 0){ makeSession(); makeSession(); }
-        extraInput.value = data.extra || 0;
-        target = data.target || 540;
-        calculate();
+        todayDateEl.value = dateStr;
+        loadDataForDate(dateStr);
         window.scrollTo({top:0, behavior:'smooth'});
-        mascotBubble.textContent = `Data ${formatDateShort(dateStr)} berhasil di-load! 📂`;
       }
     });
 
@@ -1480,7 +1692,7 @@ nextWeekBtn.addEventListener('click', () => {
 // ===========================
 // INITIALIZE
 // ===========================
-loadTodayData();
+loadDataForDate(todayDateEl.value);
 renderHistory();
 updateWeeklySummary();
 updateStreakBadge();

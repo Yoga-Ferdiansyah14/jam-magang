@@ -36,6 +36,28 @@
     --sans: 'Nunito', system-ui, -apple-system, sans-serif;
     --radius: 18px;
   }
+  :root.theme-yellow {
+    --bg: #FFFBEB;
+    --bg2: #FEF3C7;
+    --panel: #ffffff;
+    --panel-shadow: 0 4px 24px rgba(251, 191, 36, 0.12), 0 1px 4px rgba(0,0,0,0.04);
+    --line: #FDE68A;
+    --line2: #FEF08A;
+    --text: #451A03;
+    --text-dark: #271413;
+    --muted: #A16207;
+    --accent: #F59E0B;
+    --accent-light: #FBBF24;
+    --accent-bg: rgba(245, 158, 11, 0.08);
+    --good: #4ECDC4;
+    --good-bg: rgba(78,205,196,0.1);
+    --good-border: rgba(78,205,196,0.3);
+    --bad: #FF6B6B;
+    --bad-bg: rgba(255,107,107,0.1);
+    --bad-border: rgba(255,107,107,0.3);
+    --purple: #F59E0B;
+    --purple-bg: rgba(245, 158, 11, 0.08);
+  }
   *{box-sizing:border-box; margin:0; padding:0;}
   body{
     min-height:100vh;
@@ -125,6 +147,16 @@
   .name-input:focus, .name-input:hover {
     border-color: var(--accent); background: white;
     box-shadow: 0 0 0 3px rgba(255,107,157,0.15);
+  }
+  .theme-toggle-btn {
+    background: var(--bg); border: 1.5px solid var(--line2);
+    border-radius: 50%; width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 16px; transition: all 0.2s ease;
+    color: var(--text-dark);
+  }
+  .theme-toggle-btn:hover {
+    border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-bg);
   }
   .header-actions {
     display: flex; gap: 10px; justify-content: center; align-items: center; margin-top: 14px;
@@ -577,6 +609,7 @@
     <h1>Kalkulator Jam Magang <span class="wave">✨</span></h1>
     <p class="sub">Masukkan jam mulai & selesai tiap sesi kerja. Save & tracking mingguan! 💕</p>
     <div class="header-actions">
+      <button class="theme-toggle-btn cute-tooltip" id="themeToggleBtn" data-tip="Ganti Tema">💛</button>
       <input type="text" id="userNameInput" placeholder="Namamu..." class="name-input" title="Kucing akan memanggilmu dengan nama ini!">
       <input type="date" class="today-date-input" id="todayDate">
     </div>
@@ -702,6 +735,7 @@ const mascotBubble = document.getElementById('mascotBubble');
 const saveBtn = document.getElementById('saveBtn');
 const todayDateEl = document.getElementById('todayDate');
 const userNameInput = document.getElementById('userNameInput');
+const themeToggleBtn = document.getElementById('themeToggleBtn');
 const streakBadge = document.getElementById('streakBadge');
 const streakCountEl = document.getElementById('streakCount');
 const weeklyTotalEl = document.getElementById('weeklyTotal');
@@ -854,6 +888,33 @@ todayDateEl.addEventListener('change', () => {
   }
   loadDataForDate(todayDateEl.value);
 });
+
+// ===========================
+// THEME HANDLING
+// ===========================
+const THEME_KEY = 'magang_theme';
+let currentTheme = localStorage.getItem(THEME_KEY) || 'pink';
+
+function applyTheme(theme) {
+  if (theme === 'yellow') {
+    document.documentElement.classList.add('theme-yellow');
+    themeToggleBtn.textContent = '💖';
+    themeToggleBtn.setAttribute('data-tip', 'Mode Pink');
+  } else {
+    document.documentElement.classList.remove('theme-yellow');
+    themeToggleBtn.textContent = '💛';
+    themeToggleBtn.setAttribute('data-tip', 'Mode Yellow');
+  }
+}
+
+applyTheme(currentTheme);
+
+themeToggleBtn.addEventListener('click', () => {
+  currentTheme = currentTheme === 'pink' ? 'yellow' : 'pink';
+  localStorage.setItem(THEME_KEY, currentTheme);
+  applyTheme(currentTheme);
+});
+
 
 // ===========================
 // MASCOT INTERACTIONS

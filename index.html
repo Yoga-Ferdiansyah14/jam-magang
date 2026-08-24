@@ -6,17 +6,14 @@
 <title>Kalkulator Jam Magang ✨</title>
 <meta name="description" content="Kalkulator jam magang lucu untuk menghitung total jam kerja harian, menyimpan histori, dan tracking target mingguan.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --accent-rgb: 255, 107, 157;
-    --purple-rgb: 167, 139, 250;
-    --yellow-rgb: 251, 191, 36;
-    --panel-alt: #F5F0FF;
     --bg: #FFF5F7;
     --bg2: #FFF0F3;
     --panel: #ffffff;
-    --panel-shadow: 0 4px 24px rgba(var(--accent-rgb), 0.12), 0 1px 4px rgba(0,0,0,0.04);
+    --panel-shadow: 0 4px 24px rgba(var(--panel-rgb), 0.12), 0 1px 4px rgba(0,0,0,0.04);
     --line: #FFD6E0;
     --line2: #FFE8EE;
     --text: #4A3347;
@@ -24,7 +21,7 @@
     --muted: #B08DA0;
     --accent: #FF6B9D;
     --accent-light: #FF8FB8;
-    --accent-bg: rgba(var(--accent-rgb), 0.08);
+    --accent-bg: rgba(var(--accent-rgb),0.08);
     --good: #4ECDC4;
     --good-bg: rgba(78,205,196,0.1);
     --good-border: rgba(78,205,196,0.3);
@@ -32,49 +29,59 @@
     --bad-bg: rgba(255,107,107,0.1);
     --bad-border: rgba(255,107,107,0.3);
     --purple: #A78BFA;
-    --purple-bg: rgba(var(--purple-rgb), 0.08);
+    --purple-bg: rgba(var(--purple-rgb),0.08);
     --yellow: #FBBF24;
     --peach: #FDBA74;
     --orange: #FB923C;
     --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
     --sans: 'Nunito', system-ui, -apple-system, sans-serif;
     --radius: 18px;
+    --accent-rgb: 255, 107, 157;
+    --purple-rgb: 167, 139, 250;
+    --panel-rgb: 255, 130, 170;
+    --grad1: rgba(var(--accent-rgb),0.08);
+    --grad2: rgba(var(--purple-rgb),0.07);
+    --grad3: rgba(251,191,36,0.06);
   }
+
   :root.theme-yellow {
-    --bg: #FFFDF0;
-    --bg2: #FFF9E0;
+    --bg: #FFFFF5;
+    --bg2: #FFF5CC;
     --panel: #ffffff;
-    --panel-shadow: 0 4px 24px rgba(var(--accent-rgb), 0.12), 0 1px 4px rgba(0,0,0,0.04);
-    --line: #FBE6A2;
-    --line2: #FEF3C7;
-    --text: #594A26;
-    --text-dark: #36280B;
-    --muted: #BFA573;
-    --accent: #F4A222;
-    --accent-light: #F8BE59;
-    --accent-bg: rgba(var(--accent-rgb), 0.08);
-    --good: #4ECDC4;
-    --good-bg: rgba(78,205,196,0.1);
-    --good-border: rgba(78,205,196,0.3);
-    --bad: #FF6B6B;
-    --bad-bg: rgba(255,107,107,0.1);
-    --bad-border: rgba(255,107,107,0.3);
-    --purple: #F28C38;
-    --purple-bg: rgba(var(--purple-rgb), 0.08);
+    --panel-shadow: 0 8px 24px rgba(255, 179, 0, 0.18), 0 2px 4px rgba(0,0,0,0.04);
+    --line: #FFE099;
+    --line2: #FFF0C2;
+    --text: #705314;
+    --text-dark: #38290A;
+    --muted: #C29A46;
+    --accent: #FFB300;
+    --accent-light: #FFD500;
+    --accent-bg: rgba(255, 179, 0, 0.12);
     
-    --accent-rgb: 244, 162, 34;
-    --purple-rgb: 242, 140, 56;
-    --yellow-rgb: 255, 190, 80;
-    --panel-alt: #FFF9E0;
+    --grad1: rgba(255, 179, 0, 0.12);
+    --grad2: rgba(255, 213, 0, 0.1);
+    --grad3: rgba(255, 140, 0, 0.08);
+    
+    --good: #34d399;
+    --good-bg: rgba(52, 211, 153, 0.1);
+    --good-border: rgba(52, 211, 153, 0.3);
+    --bad: #D97706;
+    --bad-bg: rgba(217, 119, 6, 0.1);
+    --bad-border: rgba(217, 119, 6, 0.3);
+    --purple: #FF9500;
+    --purple-bg: rgba(255, 149, 0, 0.1);
+    --accent-rgb: 255, 179, 0;
+    --purple-rgb: 255, 149, 0;
+    --panel-rgb: 255, 179, 0;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   body{
     min-height:100vh;
     background: var(--bg);
     background-image:
-      radial-gradient(ellipse 600px 400px at 10% 0%, rgba(var(--accent-rgb), 0.08), transparent),
-      radial-gradient(ellipse 500px 300px at 90% 10%, rgba(var(--purple-rgb), 0.07), transparent),
-      radial-gradient(ellipse 400px 300px at 50% 100%, rgba(var(--yellow-rgb), 0.06), transparent);
+      radial-gradient(ellipse 600px 400px at 10% 0%, var(--grad1), transparent),
+      radial-gradient(ellipse 500px 300px at 90% 10%, var(--grad2), transparent),
+      radial-gradient(ellipse 400px 300px at 50% 100%, var(--grad3), transparent);
     color:var(--text);
     font-family:var(--sans);
     padding:32px 16px 80px;
@@ -144,7 +151,7 @@
     text-align: center;
   }
   .today-date-input:focus, .today-date-input:hover {
-    border-color: var(--purple); box-shadow: 0 0 0 3px rgba(var(--purple-rgb), 0.15);
+    border-color: var(--purple); box-shadow: 0 0 0 3px rgba(var(--purple-rgb),0.15);
   }
   .name-input {
     font-family:var(--sans); font-size:13px; color:var(--text-dark);
@@ -155,17 +162,17 @@
   }
   .name-input:focus, .name-input:hover {
     border-color: var(--accent); background: white;
-    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.15);
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb),0.15);
   }
-  .theme-toggle-btn {
-    background: var(--bg); border: 1.5px solid var(--line2);
-    border-radius: 50%; width: 36px; height: 36px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; font-size: 16px; transition: all 0.2s ease;
-    color: var(--text-dark);
+  .theme-btn {
+    background: var(--bg); border: 1.5px dashed var(--purple);
+    border-radius: 8px; padding: 6px 12px; outline: none;
+    transition: all 0.2s ease; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
   }
-  .theme-toggle-btn:hover {
-    border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-bg);
+  .theme-btn:hover {
+    border-color: var(--accent); background: white;
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb),0.15);
   }
   .header-actions {
     display: flex; gap: 10px; justify-content: center; align-items: center; margin-top: 14px;
@@ -210,7 +217,7 @@
   @keyframes fadeUp{ from{opacity:0;transform:translateY(16px);} to{opacity:1;transform:translateY(0);} }
   .panel:hover{
     transform:translateY(-2px);
-    box-shadow:0 8px 32px rgba(var(--accent-rgb), 0.15),0 2px 8px rgba(0,0,0,0.04);
+    box-shadow:0 8px 32px rgba(var(--panel-rgb),0.15),0 2px 8px rgba(0,0,0,0.04);
   }
   .panel h2{
     font-size:13px; text-transform:uppercase; letter-spacing:0.1em; color:var(--accent);
@@ -230,7 +237,7 @@
   .day-target button.active{
     border-color:var(--accent); color:white;
     background:linear-gradient(135deg, var(--accent), var(--accent-light));
-    box-shadow:0 4px 14px rgba(var(--accent-rgb), 0.3); transform:translateY(-1px);
+    box-shadow:0 4px 14px rgba(var(--accent-rgb),0.3); transform:translateY(-1px);
   }
   .day-target button.active:hover{ color:white; }
   #customWrap{ margin-bottom:2px; }
@@ -239,7 +246,7 @@
     border-radius:12px; padding:10px 12px; font-family:var(--mono); font-size:14px;
     transition:border-color 0.2s ease, box-shadow 0.2s ease; outline:none;
   }
-  #customWrap input:focus{ border-color:var(--accent); box-shadow:0 0 0 3px rgba(var(--accent-rgb), 0.15); }
+  #customWrap input:focus{ border-color:var(--accent); box-shadow:0 0 0 3px rgba(var(--accent-rgb),0.15); }
 
   /* === Sessions === */
   .session{
@@ -252,7 +259,7 @@
     border-radius:12px; padding:10px 10px; font-family:var(--mono); font-size:14px;
     outline:none; transition:border-color 0.2s ease, box-shadow 0.2s ease;
   }
-  .session input[type="time"]:focus{ border-color:var(--accent); box-shadow:0 0 0 3px rgba(var(--accent-rgb), 0.15); }
+  .session input[type="time"]:focus{ border-color:var(--accent); box-shadow:0 0 0 3px rgba(var(--accent-rgb),0.15); }
   .session .arrow{ color:var(--accent-light); font-size:16px; font-weight:700; }
   .session .remove{
     background:none; border:1.5px solid var(--line2); color:var(--muted); cursor:pointer;
@@ -288,7 +295,7 @@
     border-radius:12px; padding:9px 10px; font-family:var(--mono); font-size:14px;
     outline:none; transition:border-color 0.2s ease, box-shadow 0.2s ease;
   }
-  .extra input:focus{ border-color:var(--accent); box-shadow:0 0 0 3px rgba(var(--accent-rgb), 0.15); }
+  .extra input:focus{ border-color:var(--accent); box-shadow:0 0 0 3px rgba(var(--accent-rgb),0.15); }
 
   /* === Result Panel === */
   .result{
@@ -298,11 +305,11 @@
   }
   .result::before{
     content:''; position:absolute; top:-30px; right:-30px; width:100px; height:100px;
-    background:radial-gradient(circle, rgba(var(--accent-rgb), 0.08), transparent); border-radius:50%;
+    background:radial-gradient(circle, rgba(var(--accent-rgb),0.08), transparent); border-radius:50%;
   }
   .result::after{
     content:''; position:absolute; bottom:-20px; left:-20px; width:80px; height:80px;
-    background:radial-gradient(circle, rgba(var(--purple-rgb), 0.08), transparent); border-radius:50%;
+    background:radial-gradient(circle, rgba(var(--purple-rgb),0.08), transparent); border-radius:50%;
   }
   .result .total-emoji{
     font-size:32px; margin-bottom:8px; display:inline-block;
@@ -353,10 +360,10 @@
     background:linear-gradient(135deg, var(--accent), var(--accent-light));
     color:white; border:none; border-radius:12px; padding:12px 28px;
     font-family:var(--sans); font-size:14px; font-weight:800; cursor:pointer;
-    transition:all 0.25s ease; box-shadow:0 4px 14px rgba(var(--accent-rgb), 0.3);
+    transition:all 0.25s ease; box-shadow:0 4px 14px rgba(var(--accent-rgb),0.3);
     display:flex; align-items:center; gap:6px;
   }
-  .btn-save:hover{ transform:translateY(-2px); box-shadow:0 6px 20px rgba(var(--accent-rgb), 0.4); }
+  .btn-save:hover{ transform:translateY(-2px); box-shadow:0 6px 20px rgba(var(--accent-rgb),0.4); }
   .btn-save:active{ transform:scale(0.96); }
   .btn-save.saved{
     background:linear-gradient(135deg, var(--good), #45B7AA);
@@ -374,12 +381,12 @@
 
   /* === Weekly Summary Panel === */
   .weekly-panel{
-    background:linear-gradient(135deg, #ffffff, var(--panel-alt));
+    background:linear-gradient(135deg, #ffffff, #F5F0FF);
     position:relative; overflow:hidden;
   }
   .weekly-panel::before{
     content:''; position:absolute; top:-20px; right:-20px; width:80px; height:80px;
-    background:radial-gradient(circle, rgba(var(--purple-rgb), 0.1), transparent); border-radius:50%;
+    background:radial-gradient(circle, rgba(var(--purple-rgb),0.1), transparent); border-radius:50%;
   }
   .weekly-stats{
     display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;
@@ -399,7 +406,7 @@
     letter-spacing:0.08em; margin-top:2px; font-weight:700;
   }
   .stat-card.streak-card{
-    background:linear-gradient(135deg, rgba(251,146,60,0.08), rgba(var(--yellow-rgb), 0.08));
+    background:linear-gradient(135deg, rgba(251,146,60,0.08), rgba(251,191,36,0.08));
     border-color:rgba(251,146,60,0.2);
   }
   .stat-card.streak-card .stat-value{
@@ -417,7 +424,7 @@
     border-radius:10px; padding:7px 10px; font-family:var(--mono); font-size:13px;
     outline:none; transition:border-color 0.2s ease;
   }
-  .weekly-target-row input:focus{ border-color:var(--purple); box-shadow:0 0 0 3px rgba(var(--purple-rgb), 0.15); }
+  .weekly-target-row input:focus{ border-color:var(--purple); box-shadow:0 0 0 3px rgba(var(--purple-rgb),0.15); }
   .weekly-progress .progress-fill{
     background:linear-gradient(90deg, var(--purple), var(--accent));
   }
@@ -435,7 +442,7 @@
   }
   .history-item:hover{
     transform:translateX(4px); border-color:var(--accent-light);
-    box-shadow:0 4px 12px rgba(var(--accent-rgb), 0.1);
+    box-shadow:0 4px 12px rgba(var(--accent-rgb),0.1);
   }
   .history-item.met-target{ border-left:4px solid var(--good); }
   .history-item.missed-target{ border-left:4px solid var(--bad); }
@@ -521,15 +528,15 @@
     width:52px; height:52px; border-radius:50%;
     background:linear-gradient(135deg, var(--accent), var(--purple));
     border:none; cursor:pointer; color:white; font-size:22px;
-    box-shadow:0 4px 18px rgba(var(--accent-rgb), 0.35);
+    box-shadow:0 4px 18px rgba(var(--accent-rgb),0.35);
     display:flex; align-items:center; justify-content:center;
     transition:all 0.3s ease; outline:none;
   }
-  .music-btn:hover{ transform:scale(1.12) rotate(10deg); box-shadow:0 6px 24px rgba(var(--accent-rgb), 0.45); }
+  .music-btn:hover{ transform:scale(1.12) rotate(10deg); box-shadow:0 6px 24px rgba(var(--accent-rgb),0.45); }
   .music-btn.playing{ animation: musicPulse 1.8s ease-in-out infinite; }
   @keyframes musicPulse{
-    0%,100%{ box-shadow:0 4px 18px rgba(var(--accent-rgb), 0.35); }
-    50%{ box-shadow:0 4px 30px rgba(var(--purple-rgb), 0.6), 0 0 0 8px rgba(var(--accent-rgb), 0.12); }
+    0%,100%{ box-shadow:0 4px 18px rgba(var(--accent-rgb),0.35); }
+    50%{ box-shadow:0 4px 30px rgba(var(--purple-rgb),0.6), 0 0 0 8px rgba(var(--accent-rgb),0.12); }
   }
   .music-tooltip{
     position:fixed; bottom:84px; right:24px; z-index:1001;
@@ -580,6 +587,13 @@
     .toast{max-width:260px; padding:10px 14px;}
     .toast .toast-emoji{font-size:22px;}
   }
+  
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+    line-height: 1;
+    vertical-align: middle;
+    font-size: 1.2em;
+  }
 </style>
 </head>
 <body>
@@ -597,7 +611,7 @@
 <div class="toast-container" id="toastContainer"></div>
 
 <!-- Music Player -->
-<button class="music-btn" id="musicBtn" title="Lofi Music">🎵</button>
+<button class="music-btn" id="musicBtn" title="Lofi Music">♫</button>
 <div class="music-tooltip">Lofi Music ☁️</div>
 <div class="music-label" id="musicLabel"><span class="note-anim">🎶</span> <span id="musicLabelText">Lofi Chill...</span></div>
 
@@ -612,15 +626,15 @@
 <div class="wrap">
   <header>
     <p class="eyebrow">
-      🎀 Logbook Utility
+      <span id="eyebrowEmoji">🎀</span> Logbook Utility
       <span class="streak-badge hidden" id="streakBadge">🔥 <span id="streakCount">0</span></span>
     </p>
     <h1>Kalkulator Jam Magang <span class="wave">✨</span></h1>
     <p class="sub">Masukkan jam mulai & selesai tiap sesi kerja. Save & tracking mingguan! 💕</p>
     <div class="header-actions">
-      <button class="theme-toggle-btn cute-tooltip" id="themeToggleBtn" data-tip="Ganti Tema">💛</button>
       <input type="text" id="userNameInput" placeholder="Namamu..." class="name-input" title="Kucing akan memanggilmu dengan nama ini!">
       <input type="date" class="today-date-input" id="todayDate">
+      <button type="button" id="themeToggleBtn" class="theme-btn cute-tooltip" data-tip="Ganti Tema">🌸</button>
     </div>
   </header>
 
@@ -629,7 +643,7 @@
 
   <!-- Target Panel -->
   <div class="panel">
-    <h2><span class="icon">🎯</span> Target Hari Ini</h2>
+    <h2><span class="icon material-symbols-outlined">track_changes</span> Target Hari Ini</h2>
     <div class="day-target" id="presetContainer">
       <button type="button" data-target="540" class="active cute-tooltip" data-tip="9 jam kerja!">📅 Senin–Sabtu · 540m</button>
       <button type="button" data-target="0" id="customBtn" class="cute-tooltip" data-tip="Atur sendiri!">⚙️ Custom</button>
@@ -642,7 +656,7 @@
 
   <!-- Sessions Panel -->
   <div class="panel">
-    <h2><span class="icon">⏰</span> Sesi Kerja</h2>
+    <h2><span class="icon material-symbols-outlined">schedule</span> Sesi Kerja</h2>
     <div id="sessions"></div>
     <div class="row-actions">
       <button id="addSession" type="button">✨ Tambah sesi</button>
@@ -655,7 +669,7 @@
 
   <!-- Result Panel -->
   <div class="panel result" id="resultPanel">
-    <div class="total-emoji" id="resultEmoji">📊</div>
+    <div class="total-emoji"><span class="material-symbols-outlined" id="resultEmoji" style="font-size:inherit;">equalizer</span></div>
     <div class="total-min" id="totalMin">0</div>
     <div class="total-label">Total Menit</div>
     <div class="total-hm" id="totalHM">0 jam 0 menit</div>
@@ -673,7 +687,7 @@
 
   <!-- Weekly Summary Panel -->
   <div class="panel weekly-panel">
-    <h2><span class="icon">🏆</span> Ringkasan Minggu</h2>
+    <h2><span class="icon material-symbols-outlined">emoji_events</span> Ringkasan Minggu</h2>
     <div class="weekly-stats">
       <div class="stat-card">
         <div class="stat-value" id="weeklyTotal">0</div>
@@ -693,7 +707,7 @@
       </div>
     </div>
     <div class="weekly-target-row">
-      <label>🎯 Target minggu:</label>
+      <label><span class="material-symbols-outlined" style="font-size:inherit;vertical-align:bottom;">track_changes</span> Target minggu:</label>
       <input type="number" id="weeklyTargetInput" value="2700" min="0">
       <span style="font-size:11px;color:var(--muted);font-weight:600;">menit</span>
     </div>
@@ -707,7 +721,7 @@
 
   <!-- History Panel -->
   <div class="panel history-panel">
-    <h2><span class="icon">📖</span> Histori</h2>
+    <h2><span class="icon material-symbols-outlined">menu_book</span> Histori</h2>
     <div class="history-nav">
       <button type="button" id="prevWeek">← Minggu lalu</button>
       <span class="week-label" id="weekLabel"></span>
@@ -744,7 +758,6 @@ const mascotBubble = document.getElementById('mascotBubble');
 const saveBtn = document.getElementById('saveBtn');
 const todayDateEl = document.getElementById('todayDate');
 const userNameInput = document.getElementById('userNameInput');
-const themeToggleBtn = document.getElementById('themeToggleBtn');
 const streakBadge = document.getElementById('streakBadge');
 const streakCountEl = document.getElementById('streakCount');
 const weeklyTotalEl = document.getElementById('weeklyTotal');
@@ -897,33 +910,6 @@ todayDateEl.addEventListener('change', () => {
   }
   loadDataForDate(todayDateEl.value);
 });
-
-// ===========================
-// THEME HANDLING
-// ===========================
-const THEME_KEY = 'magang_theme';
-let currentTheme = localStorage.getItem(THEME_KEY) || 'pink';
-
-function applyTheme(theme) {
-  if (theme === 'yellow') {
-    document.documentElement.classList.add('theme-yellow');
-    themeToggleBtn.textContent = '💖';
-    themeToggleBtn.setAttribute('data-tip', 'Mode Pink');
-  } else {
-    document.documentElement.classList.remove('theme-yellow');
-    themeToggleBtn.textContent = '💛';
-    themeToggleBtn.setAttribute('data-tip', 'Mode Yellow');
-  }
-}
-
-applyTheme(currentTheme);
-
-themeToggleBtn.addEventListener('click', () => {
-  currentTheme = currentTheme === 'pink' ? 'yellow' : 'pink';
-  localStorage.setItem(THEME_KEY, currentTheme);
-  applyTheme(currentTheme);
-});
-
 
 // ===========================
 // MASCOT INTERACTIONS
@@ -1463,11 +1449,11 @@ function calculate(){
   totalHMEl.textContent = `${h} jam ${m} menit`;
 
   // Emoji
-  if(total === 0) resultEmoji.textContent = '📊';
-  else if(total < 120) resultEmoji.textContent = '🌱';
-  else if(total < 300) resultEmoji.textContent = '🌿';
-  else if(total < 500) resultEmoji.textContent = '🌻';
-  else resultEmoji.textContent = '🌈';
+  if(total === 0) resultEmoji.textContent = 'equalizer';
+  else if(total < 120) resultEmoji.textContent = 'grass';
+  else if(total < 300) resultEmoji.textContent = 'eco';
+  else if(total < 500) resultEmoji.textContent = 'local_florist';
+  else resultEmoji.textContent = 'auto_awesome';
 
   // Removed static mascot context reactions for walking cat
 
@@ -1698,12 +1684,12 @@ function renderHistory(){
     const item = document.createElement('div');
     item.className = `history-item ${metTarget ? 'met-target' : 'missed-target'}`;
     item.innerHTML = `
-      <span class="hi-emoji">${metTarget ? '✅' : '❌'}</span>
+      <span class="hi-emoji material-symbols-outlined" style="color: ${metTarget ? 'var(--good)' : 'var(--bad)'}; font-size: 28px;">${metTarget ? 'check_circle' : 'close'}</span>
       <div class="hi-info">
         <div class="hi-date">${formatDateShort(dateStr)}${isToday ? ' (Hari ini)' : ''}</div>
         <div class="hi-detail">${data.totalMinutes || 0}m · ${h}j ${m}m · target ${data.target || 540}m</div>
       </div>
-      <span class="hi-status">${metTarget ? '🎉' : '💪'}</span>
+      <span class="hi-status">${metTarget ? '🎉' : ''}</span>
       <button class="hi-delete cute-tooltip" data-tip="Hapus" data-date="${dateStr}" title="">🗑️</button>
     `;
 
@@ -1964,7 +1950,7 @@ function startLofi(){
   schedulePianoPhrase();
 
   musicBtn.classList.add('playing');
-  musicBtn.textContent = '🎵';
+  musicBtn.textContent = '♫';
   musicLabel.classList.add('visible');
   musicLabelText.textContent = lofiTracks[trackIdx % lofiTracks.length];
 }
@@ -1982,27 +1968,54 @@ function stopLofi(){
     }, 1100);
   }
   musicBtn.classList.remove('playing');
-  musicBtn.textContent = '🎵';
+  musicBtn.textContent = '♫';
   musicLabel.classList.remove('visible');
 }
 
 musicBtn.addEventListener('click', () => {
   if(isPlaying){
     stopLofi();
-    showToast('🔇', 'Musik dimatikan~', 'Klik lagi untuk main musik lofi 🎵');
+    showToast('🔇', 'Musik dimatikan~', 'Klik lagi untuk main musik lofi ♫');
   } else {
     trackIdx++;
     startLofi();
-    showToast('🎵', 'Lofi music on!', 'Semangat belajar~ ☕✨');
+    showToast('♫', 'Lofi music on!', 'Semangat belajar~ ☕✨');
     // Sparkle
     const rect = musicBtn.getBoundingClientRect();
     for(let i = 0; i < 5; i++){
       setTimeout(() => createSparkle(
         rect.left + rect.width/2 + (Math.random()-0.5)*40,
         rect.top + (Math.random()-0.5)*20,
-        ['🎵','🎶','✨','🎼','🌙'][Math.floor(Math.random()*5)]
+        ['♫','♪','✨','♩','🌙'][Math.floor(Math.random()*5)]
       ), i * 80);
     }
+  }
+});
+
+// ===========================
+// THEME TOGGLE
+// ===========================
+const themeToggleBtn = document.getElementById('themeToggleBtn');
+const eyebrowEmoji = document.getElementById('eyebrowEmoji');
+const currentTheme = localStorage.getItem('theme') || 'pink';
+if (currentTheme === 'yellow') {
+  document.documentElement.classList.add('theme-yellow');
+  themeToggleBtn.innerHTML = '<span class="material-symbols-outlined">light_mode</span>';
+  if(eyebrowEmoji) eyebrowEmoji.textContent = '🌻';
+}
+themeToggleBtn.addEventListener('click', () => {
+  if (document.documentElement.classList.contains('theme-yellow')) {
+    document.documentElement.classList.remove('theme-yellow');
+    localStorage.setItem('theme', 'pink');
+    themeToggleBtn.innerHTML = '<span class="material-symbols-outlined">local_florist</span>';
+    if(eyebrowEmoji) eyebrowEmoji.textContent = '🎀';
+    showToast('<span class="material-symbols-outlined">local_florist</span>', 'Pink Mode!', 'Kembali ke mode pink lucu~');
+  } else {
+    document.documentElement.classList.add('theme-yellow');
+    localStorage.setItem('theme', 'yellow');
+    themeToggleBtn.innerHTML = '<span class="material-symbols-outlined">light_mode</span>';
+    if(eyebrowEmoji) eyebrowEmoji.textContent = '🌻';
+    showToast('<span class="material-symbols-outlined">light_mode</span>', 'Yellow Mode!', 'Mode sunshine ceria~');
   }
 });
 
